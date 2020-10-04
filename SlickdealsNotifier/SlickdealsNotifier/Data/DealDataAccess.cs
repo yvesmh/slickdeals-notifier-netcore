@@ -16,14 +16,6 @@ namespace SlickdealsNotifier.Data
             }
         }
 
-        public async Task<List<Deal>> GetAllDeals()
-        {
-            using (var db = new DealContext())
-            {
-                return await db.Deals.AsQueryable().ToListAsync();
-            }
-        }
-
         public async Task SaveDeal(Deal deal)
         {
             using (var db = new DealContext())
