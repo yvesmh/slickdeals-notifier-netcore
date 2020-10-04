@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace SlickdealsNotifier.Data
 {
-    class DealDataAccess : IDealDataAccess
+    public class DealDataAccess : IDealDataAccess
     {
         public async Task<bool> IsDealNew(Deal deal)
         {

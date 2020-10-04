@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace SlickdealsNotifier.Data
 {
-    interface IDealDataAccess
+    public interface IDealDataAccess
     {
         Task<bool> IsDealNew(Deal deal);
         Task SaveDeal(Deal deal);
