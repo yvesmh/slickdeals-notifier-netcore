@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SlickdealsNotifier.Business
 {
-    class SlickDealsNotifierBusiness : ISlickDealsNotifierBusiness
+    public class SlickDealsNotifierBusiness : ISlickDealsNotifierBusiness
     {
         private readonly ILogger<SlickDealsNotifierBusiness> _logger;
         private readonly IDealDataAccess _dealDataAccess;

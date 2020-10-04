@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace SlickdealsNotifier.Scraping
 {
-    interface IHtmlContentParser
+    public interface IHtmlContentParser
     {
         IReadOnlyCollection<Deal> Parse(HtmlDocument document);
     }

@@ -2,7 +2,7 @@
 
 namespace SlickdealsNotifier.Business
 {
-    interface ISlickDealsNotifierBusiness
+    public interface ISlickDealsNotifierBusiness
     {
         Task NotifyNewDeals();
     }

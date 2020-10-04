@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace SlickdealsNotifier.Scraping
 {
-    interface IHtmlContentLoader
+    public interface IHtmlContentLoader
     {
         Task<HtmlDocument> Load();
     }
