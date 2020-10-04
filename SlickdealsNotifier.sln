@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29503.13
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SlickdealsNotifier", "src\SlickdealsNotifier.csproj", "{5026B6B7-B9AF-4C51-B2F4-AF2E3DDD75B0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SlickdealsNotifier", "src\SlickDealsNotifier\SlickdealsNotifier.csproj", "{5026B6B7-B9AF-4C51-B2F4-AF2E3DDD75B0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SlickDealsNotifier.Test", "SlickDealsNotifier.Test\SlickDealsNotifier.Test.csproj", "{C0655A67-24BD-4AA2-8D71-96F45057A83C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SlickDealsNotifier.Test", "src\SlickDealsNotifier.Test\SlickDealsNotifier.Test.csproj", "{C0655A67-24BD-4AA2-8D71-96F45057A83C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
