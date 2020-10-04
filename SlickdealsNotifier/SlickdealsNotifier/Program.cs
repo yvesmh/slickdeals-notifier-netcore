@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
+using SlickdealsNotifier.Data;
 using SlickdealsNotifier.Scraping;
 
 namespace SlickdealsNotifier
@@ -12,10 +14,20 @@ namespace SlickdealsNotifier
             var parser = new HtmlContentParser();
             var deals = parser.Parse(htmlContent);
 
-            foreach (var deal in deals)
+            // TODO refactor to detect good deals with different criteria
+            var bestDeals = deals.Where(d => d.Votes > 100);
+            var dealDataAccess = new DealDataAccess();
+
+            foreach (var deal in bestDeals)
             {
-                Console.WriteLine($"Deal with title {deal.Title} at price {deal.Price} found");
+                var isDealNew = await dealDataAccess.IsDealNew(deal);
+                if (isDealNew)
+                {
+                    Console.WriteLine($"Deal with title {deal.Title} at price {deal.Price} found");
+                    await dealDataAccess.SaveDeal(deal);
+                }
             }
         }
+
     }
 }
