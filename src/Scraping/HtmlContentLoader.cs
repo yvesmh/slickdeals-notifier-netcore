@@ -3,7 +3,7 @@ using HtmlAgilityPack;
 
 namespace SlickdealsNotifier.Scraping
 {
-    public class HtmlContentLoader
+    public class HtmlContentLoader : IHtmlContentLoader
     {
         private const string Url = "https://slickdeals.net/";
 

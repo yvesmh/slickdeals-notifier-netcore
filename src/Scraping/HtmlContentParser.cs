@@ -7,7 +7,7 @@ using SlickdealsNotifier.Models;
 
 namespace SlickdealsNotifier.Scraping
 {
-    public class HtmlContentParser
+    public class HtmlContentParser : IHtmlContentParser
     {
         public IReadOnlyCollection<Deal> Parse(HtmlDocument document)
         {
