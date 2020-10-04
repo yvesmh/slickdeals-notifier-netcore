@@ -43,7 +43,6 @@ namespace SlickdealsNotifier.Scraping
 
                 return new Deal
                 {
-                    Id = "TODO",
                     Title = title,
                     Url = url,
                     IsFire = isFire,
