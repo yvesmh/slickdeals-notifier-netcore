@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SlickdealsNotifier.Models;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SlickdealsNotifier.Data

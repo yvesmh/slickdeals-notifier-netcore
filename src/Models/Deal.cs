@@ -1,9 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
 
 namespace SlickdealsNotifier.Models
 {
-    
+
     public class DealContext: DbContext
     {
         public DbSet<Deal> Deals { get; set; }
