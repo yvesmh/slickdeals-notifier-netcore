@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using SlickdealsNotifier.Data;
+using SlickdealsNotifier.Notification;
 using SlickdealsNotifier.Scraping;
 using System.Linq;
 using System.Threading.Tasks;
@@ -12,20 +13,23 @@ namespace SlickdealsNotifier.Business
         private readonly IDealDataAccess _dealDataAccess;
         private readonly IHtmlContentLoader _htmlContentLoader;
         private readonly IHtmlContentParser _htmlContentParser;
+        private readonly IDealNotifier _dealNotifier;
 
         public SlickDealsNotifierBusiness(
             ILogger<SlickDealsNotifierBusiness> logger,
             IDealDataAccess dealDataAccess,
             IHtmlContentLoader htmlContentLoader,
-            IHtmlContentParser htmlContentParser)
+            IHtmlContentParser htmlContentParser,
+            IDealNotifier dealNotifier)
         {
             _logger = logger;
             _dealDataAccess = dealDataAccess;
             _htmlContentLoader = htmlContentLoader;
             _htmlContentParser = htmlContentParser;
+            _dealNotifier = dealNotifier;
         }
 
-        public async Task NotifyNewDeals()
+        public async Task NotifyNewDeals(ApplicationConfiguration applicationConfiguration)
         {
             var htmlContent = await _htmlContentLoader.Load();
             var deals = _htmlContentParser.Parse(htmlContent);
@@ -39,7 +43,16 @@ namespace SlickdealsNotifier.Business
                 if (isDealNew)
                 {
                     _logger.LogDebug($"Deal with title {deal.Title} at price {deal.Price} found");
-                    await _dealDataAccess.SaveDeal(deal);
+
+                    var notificationSuccessful = await _dealNotifier.Notify(deal, applicationConfiguration);
+
+                    // dont save the deal to the DB in case email notification failed due to 
+                    // having exceeded the free quota, if the deal is still alive next day, we can still notify
+                    if (notificationSuccessful)
+                    {
+                        await _dealDataAccess.SaveDeal(deal);
+                    }
+                    
                 }
             }
 

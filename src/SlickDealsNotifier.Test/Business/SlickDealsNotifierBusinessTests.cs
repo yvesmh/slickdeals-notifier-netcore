@@ -1,9 +1,11 @@
 ﻿using HtmlAgilityPack;
 using Microsoft.Extensions.Logging;
 using Moq;
+using SlickdealsNotifier;
 using SlickdealsNotifier.Business;
 using SlickdealsNotifier.Data;
 using SlickdealsNotifier.Models;
+using SlickdealsNotifier.Notification;
 using SlickdealsNotifier.Scraping;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,6 +23,9 @@ namespace SlickDealsNotifier.Test.Business
         private readonly Mock<IDealDataAccess> _dealDataAccess;
         private readonly Mock<IHtmlContentLoader> _htmlContentLoader;
         private readonly Mock<IHtmlContentParser> _htmlContentParser;
+        private readonly Mock<IDealNotifier> _dealNotifier;
+
+        private readonly ApplicationConfiguration _applicationConfiguration;
 
         public SlickDealsNotifierBusinessTests()
         {
@@ -28,12 +33,20 @@ namespace SlickDealsNotifier.Test.Business
             _dealDataAccess = new Mock<IDealDataAccess>();
             _htmlContentLoader = new Mock<IHtmlContentLoader>();
             _htmlContentParser = new Mock<IHtmlContentParser>();
+            _dealNotifier = new Mock<IDealNotifier>();
+
+            _applicationConfiguration = new ApplicationConfiguration
+            {
+                EmailFrom = "fake@email.com",
+                EmailTo = "fake@email.com"
+            };
 
             _busines = new SlickDealsNotifierBusiness(
                 _logger.Object,
                 _dealDataAccess.Object,
                 _htmlContentLoader.Object,
-                _htmlContentParser.Object);
+                _htmlContentParser.Object,
+                _dealNotifier.Object);
         }
 
         [Fact]
@@ -44,7 +57,7 @@ namespace SlickDealsNotifier.Test.Business
             SetupContentParser(Enumerable.Empty<Deal>());
 
             // act
-            await _busines.NotifyNewDeals();
+            await _busines.NotifyNewDeals(_applicationConfiguration);
 
             // assert
             _dealDataAccess.Verify(x =>
@@ -72,7 +85,7 @@ namespace SlickDealsNotifier.Test.Business
             SetupContentParser(deals);
 
             // act
-            await _busines.NotifyNewDeals();
+            await _busines.NotifyNewDeals(_applicationConfiguration);
 
             // assert
             _dealDataAccess.Verify(x =>
@@ -103,7 +116,7 @@ namespace SlickDealsNotifier.Test.Business
             SetupIsDealNewToAlwaysReturn(true);
 
             // act
-            await _busines.NotifyNewDeals();
+            await _busines.NotifyNewDeals(_applicationConfiguration);
 
             // assert
             // should only be called once, only with the deal with 101 votes
@@ -140,7 +153,7 @@ namespace SlickDealsNotifier.Test.Business
                 .ReturnsAsync(false);
 
             // act
-            await _busines.NotifyNewDeals();
+            await _busines.NotifyNewDeals(_applicationConfiguration);
 
             // assert
             // should only be called once, only with the deal with 101 votes

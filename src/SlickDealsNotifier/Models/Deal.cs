@@ -30,5 +30,11 @@ namespace SlickdealsNotifier.Models
         public int Votes { get; set; }
         public bool IsFire { get; set; }
         public string Url { get; set; }
+
+        // auto generated via https://marketplace.visualstudio.com/items?itemName=DavideLettieri.AutoToString
+        public override string ToString()
+        {
+            return $"{{{nameof(Title)}={Title}, {nameof(Store)}={Store}, {nameof(Price)}={Price}, {nameof(Votes)}={Votes.ToString()}, {nameof(IsFire)}={IsFire.ToString()}, {nameof(Url)}={Url}}}";
+        }
     }
 }
