@@ -12,9 +12,15 @@ namespace SlickdealsNotifier.Scraping
         public IReadOnlyCollection<Deal> Parse(HtmlDocument document)
         {
             var nodes = document.DocumentNode
-                .QuerySelectorAll(".fpGridBox .grid .frontpage");
+                .QuerySelectorAll(".dealTiles.gridDeals");
 
-            var deals = nodes
+            var frontpageDealsDiv = document.QuerySelectorAll(".gridCategory")
+                .FirstOrDefault(x => x.GetAttributeValue("data-module-name", string.Empty) == "Frontpage Slickdeals");
+
+            var dealsList = frontpageDealsDiv.QuerySelector(".dealTiles")
+                .Descendants("li");
+
+            var deals = dealsList
                 .Select(ParseNode)
                 .Where(deal => deal != null)
                 .ToList();
@@ -26,19 +32,24 @@ namespace SlickdealsNotifier.Scraping
         {
             try
             {
-                var titleHtmlNode = node.QuerySelector(".itemTitle");
+                // <a href="{url}">{Title}</a>
+                var titleHtmlNode = node.QuerySelector(".bp-c-card_title");
 
-                var title = titleHtmlNode.Attributes["title"].Value;
-                var url = titleHtmlNode.Attributes["href"].Value;
+                var title = titleHtmlNode.InnerText;
+                var url = titleHtmlNode.GetAttributeValue("href", string.Empty);
 
-                var store = node.QuerySelector(".itemStore").InnerText;
+                // <button>{Store}</button>
+                var store = node.QuerySelector(".bp-p-storeLink").InnerText;
                 
-                var price = node.QuerySelector(".itemPrice").InnerText;
+                // <span>{price}</span>
+                var price = node.QuerySelector(".bp-p-dealCard_price").InnerText;
 
-                var votesString = node.QuerySelector(".count").InnerText;
+                // <span>{Votes}</span>
+                var votesString = node.QuerySelector(".bp-p-votingThumbsPopup_voteCount").InnerText;
                 int.TryParse(votesString, out var votes);
 
-                var isFire = node.QuerySelectorAll(".fire .icon .icon-fire")
+                // <span class="..."></span> -- this one is only present when the deal is on fire
+                var isFire = node.QuerySelectorAll(".bp-c-icon bp-i-fire")
                                  .Count > 0;
 
                 return new Deal
