@@ -4,6 +4,6 @@ namespace SlickdealsNotifier.Business
 {
     public interface ISlickDealsNotifierBusiness
     {
-        Task NotifyNewDeals();
+        Task NotifyNewDeals(ApplicationConfiguration applicationConfiguration);
     }
 }
