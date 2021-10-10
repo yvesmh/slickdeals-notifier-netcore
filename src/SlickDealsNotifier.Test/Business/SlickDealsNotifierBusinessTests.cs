@@ -114,6 +114,7 @@ namespace SlickDealsNotifier.Test.Business
             SetupContentLoader();
             SetupContentParser(deals);
             SetupIsDealNewToAlwaysReturn(true);
+            SetupNotification(true);
 
             // act
             await _busines.NotifyNewDeals(_applicationConfiguration);
@@ -152,6 +153,8 @@ namespace SlickDealsNotifier.Test.Business
                 .ReturnsAsync(true)
                 .ReturnsAsync(false);
 
+            SetupNotification(true);
+
             // act
             await _busines.NotifyNewDeals(_applicationConfiguration);
 
@@ -159,6 +162,49 @@ namespace SlickDealsNotifier.Test.Business
             // should only be called once, only with the deal with 101 votes
             _dealDataAccess.Verify(x =>
                     x.SaveDeal(It.Is<Deal>(d => d.Votes == 101)),
+                Times.Once);
+        }
+
+        [Fact]
+        public async Task NotifyNewDeals_WhenDealCouldNotBeNotified_DoesNotSaveToDb()
+        {
+            var deals = new[]
+            {
+                new Deal
+                {
+                    Votes = 101,
+                    Title = "Free Stuff man",
+                },
+                new Deal
+                {
+                    Votes = 9001,
+                    Title = "Power level (already in sqlite)"
+                }
+            };
+
+            // arrange
+            SetupContentLoader();
+            SetupContentParser(deals);
+            SetupIsDealNewToAlwaysReturn(true);
+            // 1 deal is new, 1 isn't 
+            _dealDataAccess.SetupSequence(x => x.IsDealNew(
+                It.IsAny<Deal>()))
+                .ReturnsAsync(true)
+                .ReturnsAsync(false);
+
+            _dealNotifier.SetupSequence(x => x.Notify(
+                It.IsAny<Deal>(),
+                It.IsAny<ApplicationConfiguration>()))
+              .ReturnsAsync(true)
+              .ReturnsAsync(false);
+
+            // act
+            await _busines.NotifyNewDeals(_applicationConfiguration);
+
+            // assert
+            // should only be called once, only with the deal that was successfuly notified
+            _dealDataAccess.Verify(x =>
+                    x.SaveDeal(It.IsAny<Deal>()),
                 Times.Once);
         }
 
@@ -182,6 +228,14 @@ namespace SlickDealsNotifier.Test.Business
         {
             _dealDataAccess.Setup(x => x.IsDealNew(It.IsAny<Deal>()))
                 .ReturnsAsync(valueToReturn);
+        }
+
+        private void SetupNotification(bool valueToReturn)
+        {
+            _dealNotifier.Setup(x => x.Notify(
+                It.IsAny<Deal>(),
+                It.IsAny<ApplicationConfiguration>()))
+              .ReturnsAsync(valueToReturn);
         }
 
     }
