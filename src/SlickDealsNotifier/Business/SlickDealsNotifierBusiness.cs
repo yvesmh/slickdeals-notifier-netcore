@@ -42,7 +42,7 @@ namespace SlickdealsNotifier.Business
                 var isDealNew = await _dealDataAccess.IsDealNew(deal);
                 if (isDealNew)
                 {
-                    _logger.LogDebug($"Deal with title {deal.Title} at price {deal.Price} found");
+                    _logger.LogDebug($"Deal with title {deal.Title} at price {deal.Price} found. Attempting to notify");
 
                     var notificationSuccessful = await _dealNotifier.Notify(deal, applicationConfiguration);
 
@@ -51,8 +51,13 @@ namespace SlickdealsNotifier.Business
                     if (notificationSuccessful)
                     {
                         await _dealDataAccess.SaveDeal(deal);
+                        _logger.LogInformation($"Successfully notified and saved deal {deal}");
                     }
                     
+                }
+                else
+                {
+                    _logger.LogDebug($"Deal was found but is not new, skipping notification. Deal: {deal}");
                 }
             }
 

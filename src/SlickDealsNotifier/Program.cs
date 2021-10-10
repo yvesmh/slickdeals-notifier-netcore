@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Serilog;
 using SlickdealsNotifier.Business;
 using SlickdealsNotifier.Data;
 using SlickdealsNotifier.Notification;
@@ -23,8 +25,14 @@ namespace SlickdealsNotifier
 
             var appConfiguration = configurationRoot.Get<ApplicationConfiguration>();
 
+            Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Debug()
+                .WriteTo.Console()
+                .WriteTo.File("log-.txt", rollingInterval: RollingInterval.Day)
+                .CreateLogger();
+
             var serviceProvider = new ServiceCollection()
-                .AddLogging(builder => builder.AddConsole().SetMinimumLevel(LogLevel.Debug))
+                .AddLogging( configure => configure.AddSerilog())
                 .AddSingleton<ISlickDealsNotifierBusiness, SlickDealsNotifierBusiness>()
                 .AddSingleton<IHtmlContentLoader, HtmlContentLoader>()
                 .AddSingleton<IHtmlContentParser, HtmlContentParser>()
@@ -37,12 +45,14 @@ namespace SlickdealsNotifier
             var logger = serviceProvider.GetService<ILoggerFactory>()
                 .CreateLogger<Program>();
 
+            var stopwatch = Stopwatch.StartNew();
+
             logger.LogDebug("Starting application");
 
             var business = serviceProvider.GetService<ISlickDealsNotifierBusiness>();
             await business.NotifyNewDeals(appConfiguration);
-
-            logger.LogDebug("Completed scraping and notifying");
+            stopwatch.Stop();
+            logger.LogDebug($"Completed scraping and notifying in {stopwatch.Elapsed}");
         }
 
     }
